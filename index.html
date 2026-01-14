@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="vi" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đánh Giá Khả Năng Đậu Visa Du Lịch</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+    
+    * {
+      font-family: 'Be Vietnam Pro', sans-serif;
+    }
+    
+    .answer-option {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+    }
+    
+    .answer-option:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 30px rgba(255, 255, 255, 0.2);
+    }
+    
+    .answer-option.selected {
+      background: linear-gradient(135deg, #1976d2 0%, #42a5f5 100%);
+      border-color: #ffffff;
+      transform: scale(1.02);
+    }
+    
+    .progress-bar {
+      transition: width 0.5s ease;
+    }
+    
+    .question-slide {
+      animation: slideIn 0.5s ease;
+    }
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    .result-card {
+      animation: slideUp 0.5s ease;
+    }
+    
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .score-circle {
+      animation: scaleIn 0.6s ease;
+    }
+    
+    @keyframes scaleIn {
+      from {
+        transform: scale(0);
+      }
+      to {
+        transform: scale(1);
+      }
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+ </head>
+ <body class="h-full text-white overflow-auto" style="background: #0f4c81;">
+  <!-- LOGO HTO GROUP -->
+<div class="fixed top-4 left-4 z-50">
+  <a href="https://htogroup.com.vn" target="_blank"
+     class="flex items-center gap-2 bg-white/20 backdrop-blur-lg px-4 py-2 rounded-2xl border border-white/30 shadow-xl hover:bg-white/30 transition">
+    <img src="/visa-testing/picture/Logo HTO GROUP.png" alt="HTO Group" class="h-14 md:h-20 object-contain" />
+
+
+  </a>
+</div>
+
+  <div id="app-container" class="w-full min-h-full py-8 px-4">
+   <div class="max-w-3xl mx-auto"><!-- Progress Bar (Fixed at top) -->
+    <div class="mb-8">
+     <div class="flex justify-between text-sm text-white/80 mb-3"><span class="font-medium">Câu hỏi <span id="current-question">1</span>/6</span> <span id="progress-text" class="font-medium">Tiến độ: 0%</span>
+     </div>
+     <div class="h-3 bg-white/20 rounded-full overflow-hidden backdrop-blur">
+      <div id="progress-bar" class="progress-bar h-full rounded-full" style="width: 0%; background: linear-gradient(90deg, #ffffff 0%, #64b5f6 100%);"></div>
+     </div>
+    </div><!-- Start Screen -->
+    <div id="start-screen" class="question-slide">
+     <div class="bg-white/10 backdrop-blur-lg rounded-3xl p-8 md:p-12 border border-white/20 text-center shadow-2xl">
+      <div class="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-2xl mb-6">
+       <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+       </svg>
+      </div>
+      <h1 id="app-title" class="text-3xl md:text-4xl font-bold mb-4 text-white">Đánh Giá Khả Năng Đậu Visa Du Lịch</h1>
+      <p id="app-subtitle" class="text-lg text-white/80 mb-8">Dành cho công dân Việt Nam • 6 tiêu chí đánh giá</p><button id="start-btn" class="px-8 py-4 bg-white text-blue-700 font-bold text-lg rounded-2xl shadow-lg hover:bg-blue-50 transition-all duration-300 hover:scale-105 active:scale-95"> 🚀 Bắt Đầu Đánh Giá </button>
+     </div>
+    </div><!-- Quiz Container -->
+    <div id="quiz-container" class="hidden"><!-- Questions will be dynamically rendered here -->
+    </div><!-- Result Section -->
+    <div id="result-section" class="hidden">
+     <div class="result-card bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20 shadow-2xl">
+      <h2 class="text-2xl font-bold text-center mb-8 text-white">🎯 Kết Quả Đánh Giá Hồ Sơ</h2><!-- Score Circle -->
+      <div class="flex justify-center mb-8">
+       <div id="score-circle" class="score-circle relative w-40 h-40 rounded-full flex items-center justify-center bg-white/20 backdrop-blur">
+        <div class="text-center">
+         <div id="score-number" class="text-5xl font-bold text-white">
+          0
+         </div>
+         <div class="text-sm text-white/80">
+          /100 điểm
+         </div>
+        </div>
+       </div>
+      </div><!-- Status Badge -->
+      <div class="text-center mb-8"><span id="status-badge" class="inline-flex items-center gap-2 px-6 py-3 rounded-full text-lg font-bold bg-white/20"> <span id="status-icon"></span> <span id="status-text"></span> </span>
+       <p id="success-rate" class="mt-3 text-white/80"></p>
+      </div><!-- Score Breakdown -->
+      <div class="bg-white/10 rounded-2xl p-6 mb-6">
+       <h3 class="font-semibold mb-4 text-white">📊 Chi tiết điểm số</h3>
+       <div id="score-breakdown" class="space-y-2 text-sm"></div>
+      </div><!-- Suggestions -->
+      <div id="suggestions-box" class="bg-white/10 rounded-2xl p-6 mb-6">
+       <h3 class="font-semibold mb-4 text-white">💡 Gợi ý cải thiện hồ sơ</h3>
+       <ul id="suggestions-list" class="space-y-2 text-sm text-white/90"></ul>
+      </div><!-- Answer Review -->
+      <div class="bg-white/10 rounded-2xl p-6 mb-6">
+       <h3 class="font-semibold mb-4 text-white">📋 Các câu trả lời của bạn</h3>
+       <div id="answer-review" class="space-y-4"></div>
+      </div><!-- Retry Button --> <button id="retry-btn" class="w-full py-4 bg-white text-blue-700 font-bold text-lg rounded-2xl shadow-lg hover:bg-blue-50 transition-all duration-300 hover:scale-105 active:scale-95"> 🔄 Làm lại bài đánh giá </button>
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+    const defaultConfig = {
+      app_title: 'Đánh Giá Khả Năng Đậu Visa Du Lịch',
+      app_subtitle: 'Dành cho công dân Việt Nam • 6 tiêu chí đánh giá',
+      button_text: '🚀 Bắt Đầu Đánh Giá'
+    };
+
+    let config = { ...defaultConfig };
+
+    const questions = [
+      {
+        id: 'travel',
+        title: 'Lịch sử du lịch nước ngoài',
+        max: 25,
+        options: [
+          { value: 25, text: 'Đã từng đi Mỹ / Úc / Canada / Schengen / Nhật / Hàn', desc: 'Lịch sử visa mạnh nhất' },
+          { value: 15, text: 'Đã từng đi các nước châu Á (Singapore, Thái, Malaysia...)', desc: 'Có kinh nghiệm du lịch quốc tế' },
+          { value: 0, text: 'Chưa từng đi nước ngoài', desc: 'Chưa có lịch sử visa' }
+        ]
+      },
+      {
+        id: 'job',
+        title: 'Công việc & ràng buộc tại Việt Nam',
+        max: 25,
+        options: [
+          { value: 20, text: 'Nhân viên có HĐLĐ, thâm niên > 2 năm', desc: 'Công việc ổn định, có ràng buộc rõ ràng' },
+          { value: 15, text: 'Kinh doanh tự do / Freelancer có giấy tờ hợp lệ', desc: 'Có chứng minh thu nhập hợp pháp' },
+          { value: 0, text: 'Không chứng minh được công việc ổn định', desc: 'Thiếu giấy tờ chứng minh' }
+        ]
+      },
+      {
+        id: 'finance',
+        title: 'Năng lực tài chính',
+        max: 20,
+        options: [
+          { value: 20, text: 'Sổ tiết kiệm > 6 tháng + sao kê lương ổn định', desc: 'Tài chính vững mạnh và minh bạch' },
+          { value: 10, text: 'Có tiết kiệm nhưng thấp / sao kê chưa rõ', desc: 'Cần bổ sung thêm chứng minh' },
+          { value: 0, text: 'Không chứng minh được tài chính', desc: 'Thiếu minh chứng tài chính' }
+        ]
+      },
+      {
+        id: 'personal',
+        title: 'Nhân thân & độ tuổi',
+        max: 15,
+        options: [
+          { value: 15, text: 'Đã kết hôn, có gia đình tại Việt Nam', desc: 'Ràng buộc gia đình mạnh' },
+          { value: 10, text: 'Độc thân nhưng có công việc ổn định', desc: 'Có ràng buộc công việc' },
+          { value: 5, text: 'Tuổi quá trẻ / ràng buộc yếu', desc: 'Cần thêm yếu tố hỗ trợ' }
+        ]
+      },
+      {
+        id: 'purpose',
+        title: 'Lý do & mục đích chuyến đi',
+        max: 15,
+        options: [
+          { value: 15, text: 'Du lịch theo tour / có thư mời rõ ràng', desc: 'Lịch trình được đảm bảo' },
+          { value: 10, text: 'Du lịch tự túc, lịch trình rõ ràng', desc: 'Có kế hoạch chi tiết' },
+          { value: 0, text: 'Mục đích không rõ ràng', desc: 'Thiếu lịch trình cụ thể' }
+        ]
+      },
+      {
+        id: 'rejection',
+        title: 'Lịch sử từ chối visa',
+        max: 0,
+        options: [
+          { value: 0, text: 'Chưa từng bị từ chối visa', desc: '+0 điểm - Lịch sử sạch', color: 'emerald' },
+          { value: -10, text: 'Từng bị từ chối visa trong 2 năm', desc: '-10 điểm - Cần giải trình', color: 'amber' },
+          { value: -20, text: 'Hồ sơ từng có gian dối', desc: '-20 điểm - Rủi ro cao', color: 'red' }
+        ]
+      }
+    ];
+
+    let currentQuestionIndex = 0;
+    let answers = {};
+
+    function updateProgress() {
+      const answered = Object.keys(answers).length;
+      const percent = (answered / questions.length) * 100;
+      document.getElementById('progress-bar').style.width = percent + '%';
+      document.getElementById('progress-text').textContent = `Tiến độ: ${Math.round(percent)}%`;
+      document.getElementById('current-question').textContent = Math.min(currentQuestionIndex + 1, questions.length);
+    }
+
+    function renderQuestion(index) {
+      const question = questions[index];
+      const container = document.getElementById('quiz-container');
+      
+      container.innerHTML = `
+        <div class="question-slide">
+          <div class="bg-white/10 backdrop-blur-lg rounded-3xl p-6 md:p-8 border border-white/20 shadow-2xl">
+            <div class="mb-6">
+              <div class="inline-block px-4 py-2 bg-white/20 rounded-full text-sm font-semibold mb-4">
+                Câu ${index + 1} / ${questions.length}
+              </div>
+              <h2 class="text-2xl md:text-3xl font-bold text-white mb-2">${question.title}</h2>
+              <p class="text-white/70 text-sm">Tối đa ${question.max > 0 ? question.max : 0} điểm ${question.max === 0 ? '(Trừ điểm nếu có)' : ''}</p>
+            </div>
+            
+            <div class="space-y-4">
+              ${question.options.map((opt, i) => `
+                <div class="answer-option p-5 bg-white/20 hover:bg-white/30 border-2 border-white/30 rounded-2xl backdrop-blur" 
+                     data-value="${opt.value}" 
+                     onclick="selectAnswer('${question.id}', ${opt.value})">
+                  <div class="flex items-start gap-4">
+                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-white/30 flex items-center justify-center font-bold text-white">
+                      ${String.fromCharCode(65 + i)}
+                    </div>
+                    <div class="flex-1">
+                      <div class="font-semibold text-white text-lg mb-1">${opt.text}</div>
+                      <div class="text-white/70 text-sm">${opt.desc}</div>
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function selectAnswer(questionId, value) {
+      answers[questionId] = value;
+      
+      const options = document.querySelectorAll('.answer-option');
+      options.forEach(opt => {
+        if (parseInt(opt.dataset.value) === value) {
+          opt.classList.add('selected');
+        } else {
+          opt.classList.remove('selected');
+        }
+      });
+
+      updateProgress();
+
+      setTimeout(() => {
+        if (currentQuestionIndex < questions.length - 1) {
+          currentQuestionIndex++;
+          renderQuestion(currentQuestionIndex);
+        } else {
+          showResult();
+        }
+      }, 600);
+    }
+
+    function calculateScore() {
+      let total = 0;
+      const breakdown = [];
+
+      questions.forEach(q => {
+        const score = answers[q.id] || 0;
+        total += score;
+        breakdown.push({
+          label: q.title,
+          score: score,
+          max: q.max
+        });
+      });
+
+      return { total: Math.max(0, total), breakdown };
+    }
+
+    function getResultData(score) {
+      if (score >= 85) {
+        return {
+          status: 'RẤT MẠNH',
+          icon: '🎉',
+          rate: 'Tỉ lệ đậu visa > 90%',
+          bgColor: 'rgba(16, 185, 129, 0.3)'
+        };
+      } else if (score >= 70) {
+        return {
+          status: 'KHÁ TỐT',
+          icon: '✨',
+          rate: 'Tỉ lệ đậu visa 70-85%',
+          bgColor: 'rgba(59, 130, 246, 0.3)'
+        };
+      } else if (score >= 50) {
+        return {
+          status: 'TRUNG BÌNH',
+          icon: '⚠️',
+          rate: 'Tỉ lệ đậu visa 40-60%',
+          bgColor: 'rgba(245, 158, 11, 0.3)'
+        };
+      } else {
+        return {
+          status: 'CẦN CẢI THIỆN',
+          icon: '❌',
+          rate: 'Tỉ lệ đậu visa < 30%',
+          bgColor: 'rgba(239, 68, 68, 0.3)'
+        };
+      }
+    }
+
+    function getSuggestions(breakdown) {
+      const suggestions = [];
+      
+      breakdown.forEach(item => {
+        if (item.label === 'Lịch sử du lịch nước ngoài' && item.score < 25) {
+          suggestions.push('🛫 Nên đi du lịch các nước châu Á trước để tạo lịch sử visa (Thái Lan, Singapore, Malaysia...)');
+        }
+        if (item.label === 'Công việc & ràng buộc tại Việt Nam' && item.score < 20) {
+          suggestions.push('💼 Chuẩn bị HĐLĐ, xác nhận công việc từ công ty, hoặc giấy phép kinh doanh');
+        }
+        if (item.label === 'Năng lực tài chính' && item.score < 20) {
+          suggestions.push('💰 Mở sổ tiết kiệm ít nhất 6 tháng, duy trì số dư ổn định và lấy sao kê ngân hàng');
+        }
+        if (item.label === 'Nhân thân & độ tuổi' && item.score < 15) {
+          suggestions.push('👨‍👩‍👧 Bổ sung giấy tờ chứng minh ràng buộc gia đình (giấy kết hôn, giấy khai sinh con...)');
+        }
+        if (item.label === 'Lý do & mục đích chuyến đi' && item.score < 15) {
+          suggestions.push('🗺️ Chuẩn bị lịch trình chi tiết, booking khách sạn, vé máy bay hoặc đăng ký tour du lịch');
+        }
+        if (item.label === 'Lịch sử từ chối visa' && item.score < 0) {
+          suggestions.push('📝 Chuẩn bị thư giải trình về lần từ chối trước, nêu rõ những thay đổi trong hồ sơ mới');
+        }
+      });
+
+      if (suggestions.length === 0) {
+        suggestions.push('✅ Hồ sơ của bạn khá tốt! Hãy chuẩn bị đầy đủ giấy tờ và n���p hồ sơ.');
+      }
+
+      return suggestions;
+    }
+
+    function showResult() {
+      const { total, breakdown } = calculateScore();
+      const result = getResultData(total);
+      
+      document.getElementById('quiz-container').classList.add('hidden');
+      document.getElementById('result-section').classList.remove('hidden');
+      
+      const scoreCircle = document.getElementById('score-circle');
+      scoreCircle.style.background = result.bgColor;
+      
+      document.getElementById('score-number').textContent = total;
+      
+      const statusBadge = document.getElementById('status-badge');
+      statusBadge.style.background = result.bgColor;
+      document.getElementById('status-icon').textContent = result.icon;
+      document.getElementById('status-text').textContent = `Hồ sơ ${result.status}`;
+      document.getElementById('success-rate').textContent = result.rate;
+      
+      const breakdownHtml = breakdown.map(item => {
+        const scoreDisplay = item.score >= 0 ? `+${item.score}` : item.score;
+        const maxDisplay = item.max > 0 ? `/${item.max}` : '';
+        const colorClass = item.score < 0 ? 'text-red-300' : item.score === item.max ? 'text-emerald-300' : 'text-white';
+        return `
+          <div class="flex justify-between items-center py-2 border-b border-white/10 last:border-0">
+            <span class="text-white/80">${item.label}</span>
+            <span class="${colorClass} font-semibold">${scoreDisplay}${maxDisplay}</span>
+          </div>
+        `;
+      }).join('');
+      document.getElementById('score-breakdown').innerHTML = breakdownHtml;
+      
+      const suggestions = getSuggestions(breakdown);
+      const suggestionsHtml = suggestions.map(s => `
+        <li class="flex items-start gap-3">
+          <span class="flex-shrink-0">•</span>
+          <span>${s}</span>
+        </li>
+      `).join('');
+      document.getElementById('suggestions-list').innerHTML = suggestionsHtml;
+      
+      // Show answer review
+      const answerReviewHtml = questions.map((q, index) => {
+        const selectedValue = answers[q.id];
+        const selectedOption = q.options.find(opt => opt.value === selectedValue);
+        
+        return `
+          <div class="bg-white/5 rounded-xl p-4">
+            <div class="flex items-start gap-3 mb-3">
+              <div class="flex-shrink-0 w-7 h-7 rounded-full bg-white/20 flex items-center justify-center font-bold text-sm text-white">
+                ${index + 1}
+              </div>
+              <div class="flex-1">
+                <h4 class="font-semibold text-white mb-1">${q.title}</h4>
+                <div class="text-xs text-white/60">Điểm tối đa: ${q.max > 0 ? q.max : 0}</div>
+              </div>
+            </div>
+            <div class="ml-10 bg-white/10 rounded-lg p-3">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-white font-medium">✓ ${selectedOption ? selectedOption.text : 'Chưa trả lời'}</span>
+              </div>
+              <div class="text-sm text-white/70">${selectedOption ? selectedOption.desc : ''}</div>
+              <div class="mt-2 inline-block px-3 py-1 rounded-full text-xs font-semibold ${selectedValue >= 0 ? 'bg-emerald-500/30 text-emerald-200' : 'bg-red-500/30 text-red-200'}">
+                ${selectedValue >= 0 ? '+' : ''}${selectedValue} điểm
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      document.getElementById('answer-review').innerHTML = answerReviewHtml;
+    }
+
+    function resetQuiz() {
+      currentQuestionIndex = 0;
+      answers = {};
+      document.getElementById('start-screen').classList.remove('hidden');
+      document.getElementById('quiz-container').classList.add('hidden');
+      document.getElementById('result-section').classList.add('hidden');
+      updateProgress();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.getElementById('start-btn').addEventListener('click', function() {
+      document.getElementById('start-screen').classList.add('hidden');
+      document.getElementById('quiz-container').classList.remove('hidden');
+      renderQuestion(0);
+      updateProgress();
+    });
+
+    document.getElementById('retry-btn').addEventListener('click', resetQuiz);
+
+    window.selectAnswer = selectAnswer;
+
+    async function onConfigChange(cfg) {
+      config = { ...defaultConfig, ...cfg };
+      
+      const titleEl = document.getElementById('app-title');
+      if (titleEl) titleEl.textContent = config.app_title || defaultConfig.app_title;
+      
+      const subtitleEl = document.getElementById('app-subtitle');
+      if (subtitleEl) subtitleEl.textContent = config.app_subtitle || defaultConfig.app_subtitle;
+      
+      const startBtn = document.getElementById('start-btn');
+      if (startBtn) {
+        const btnText = config.button_text || defaultConfig.button_text;
+        startBtn.textContent = btnText;
+      }
+    }
+
+    function mapToCapabilities(cfg) {
+      return {
+        recolorables: [],
+        borderables: [],
+        fontEditable: undefined,
+        fontSizeable: undefined
+      };
+    }
+
+    function mapToEditPanelValues(cfg) {
+      return new Map([
+        ['app_title', cfg.app_title || defaultConfig.app_title],
+        ['app_subtitle', cfg.app_subtitle || defaultConfig.app_subtitle],
+        ['button_text', cfg.button_text || defaultConfig.button_text]
+      ]);
+    }
+
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities,
+        mapToEditPanelValues
+      });
+    }
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9bd99643b3bc4e53',t:'MTc2ODM1NjUyMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
